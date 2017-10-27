@@ -259,6 +259,10 @@ config NFS_COMMON
 	depends on NFSD || NFS_FS
 	default y
 
+config EXFAT_FS
+	bool
+	default y
+
 source "net/sunrpc/Kconfig"
 source "fs/ceph/Kconfig"
 source "fs/cifs/Kconfig"
@@ -266,6 +270,7 @@ source "fs/ncpfs/Kconfig"
 source "fs/coda/Kconfig"
 source "fs/afs/Kconfig"
 source "fs/9p/Kconfig"
+source "fs/exfat/Kconfig"
 
 endif # NETWORK_FILESYSTEMS
 
