@@ -6,3 +6,5 @@ export ARCH=arm64
 make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE O=out msm8952-tulip_defconfig
 make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE O=out -j3
 
+mv out/arch/arm64/boot/Image.gz-dtb .
+
