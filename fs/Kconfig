@@ -263,6 +263,10 @@ config EXFAT_FS
 	bool
 	default y
 
+config F2FS_FS
+	bool
+	default n
+
 source "net/sunrpc/Kconfig"
 source "fs/ceph/Kconfig"
 source "fs/cifs/Kconfig"
