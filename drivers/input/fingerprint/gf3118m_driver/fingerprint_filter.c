@@ -78,10 +78,13 @@ static void fpf_input_callback(struct work_struct *unused) {
 
 static void fpf_input_event(struct input_handle *handle, unsigned int type,
 				unsigned int code, int value) {
+pr_info("Event stats:\nfpf_switch: %d\nType: %d where EV_KEY %d\nCode: %d\nValue: %d", fpf_switch, type, EV_KEY, code, value);
+
 }
 
 static int input_dev_filter(struct input_dev *dev) {
-	if (strstr(dev->name, "fpc1020")) {
+	if (strstr(dev->name, "goodix_fp")) {
+		pr_info("Found: %s",dev->name);
 		return 0;
 	} else {
 		return 1;
@@ -232,6 +235,7 @@ static bool fpf_input_filter(struct input_handle *handle,
                                     unsigned int type, unsigned int code,
                                     int value)
 {
+	pr_info("Stats:\nfpf_switch: %d\nType: %d where EV_KEY %d\nCode: %d\nValue: %d", fpf_switch, type,EV_KEY, code, value);
 	// if it's not on, don't filter anything...
 	if (fpf_switch == 0) return false;
 
@@ -547,6 +551,7 @@ static int __init fpf_init(void)
 	if (rc)
 		pr_err("%s: sysfs_create_file failed for vib_strength\n", __func__);
 
+pr_info("All went well __FPF__");
 err_input_dev:
 	input_free_device(fpf_pwrdev);
 
@@ -567,5 +572,5 @@ static void __exit fpf_exit(void)
 	return;
 }
 
-module_init(fpf_init);
+late_initcall(fpf_init);
 module_exit(fpf_exit);
