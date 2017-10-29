@@ -1212,9 +1212,9 @@ random_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
 		count += n;
 		buf += n;
 		nbytes -= n;
-		break;		/* This break makes the device work */
-				/* like a named pipe */
-	//}
+		break;		//This break makes the device work
+				//like a named pipe
+	}*/
 
 	//return (count ? count : retval);
 	return extract_entropy_user(&nonblocking_pool, buf, nbytes);

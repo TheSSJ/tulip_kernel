@@ -176,7 +176,6 @@ void set_power_suspend_state_panel_hook(int new_state)
 	if (mode == POWER_SUSPEND_PANEL)
 		set_power_suspend_state(new_state);
 }
-
 EXPORT_SYMBOL(set_power_suspend_state_panel_hook);
 
 // ------------------------------------------ sysfs interface ------------------------------------------
