@@ -4,7 +4,7 @@
 #include <linux/input.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
-#include <linux/vibtrig.h>
+//#include <linux/vibtrig.h>
 
 #ifdef CONFIG_FB
 #include <linux/notifier.h>
@@ -13,7 +13,7 @@
 
 #define DRIVER_AUTHOR "illes pal <illespal@gmail.com>"
 #define DRIVER_DESCRIPTION "fingerprint_filter driver"
-#define DRIVER_VERSION "1.1"
+#define DRIVER_VERSION "1.0"
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESCRIPTION);
@@ -21,7 +21,7 @@ MODULE_VERSION(DRIVER_VERSION);
 MODULE_LICENSE("GPL");
 
 #define fpf_PWRKEY_DUR          60
-#define FUNC_CYCLE_DUR          10
+#define FUNC_CYCLE_DUR          9
 #define VIB_STRENGTH		20
 
 static int fpf_switch = 2;
@@ -61,7 +61,7 @@ static void fpf_presspwr(struct work_struct * fpf_presspwr_work) {
 static DECLARE_WORK(fpf_presspwr_work, fpf_presspwr);
 
 static void fpf_vib(void) {
-	vib_trigger_event(vib_trigger, vib_strength);
+	//vib_trigger_event(vib_trigger, vib_strength);
 }
 
 /* PowerKey trigger */
@@ -81,7 +81,7 @@ static void fpf_input_event(struct input_handle *handle, unsigned int type,
 }
 
 static int input_dev_filter(struct input_dev *dev) {
-	if (strstr(dev->name, "goodix_fp")) {
+	if (strstr(dev->name, "fpc1020")) {
 		return 0;
 	} else {
 		return 1;
@@ -136,6 +136,13 @@ static int fingerprint_pressed = 0;
 // signals when the powering down of screen happens while FP is still being pressed, so filter won't turn screen on, when the button is released based on this value.
 static int powering_down_with_fingerprint_still_pressed = 0;
 
+
+// minimum doubletap wait latency will be: (BASE_VALUE + PERIOD) * FUNC_CYLCE_DUR -> minimum is right now (8+0) * 9 = 72msec
+#define DT_WAIT_PERIOD_MAX 9
+#define DT_WAIT_PERIOD_BASE_VALUE 8
+#define DT_WAIT_PERIOD_DEFAULT 2
+static int doubletap_wait_period = DT_WAIT_PERIOD_DEFAULT;
+
 /* Home button work func 
 	will start with trying to lock worklock
 	then use vibrator to signal button press 'imitation'
@@ -157,11 +164,11 @@ static void fpf_home_button_func(struct work_struct * fpf_presspwr_work) {
 	fpf_vib();
 	while (!break_home_button_func_work) {
 		count_cycles++;
-		if (count_cycles>15) {
+		if (count_cycles > (DT_WAIT_PERIOD_BASE_VALUE + doubletap_wait_period)) {
 			break;
 		}
 		msleep(FUNC_CYCLE_DUR);
-		pr_debug("fpf %s counting in cycle before KEY_HOME 1 synced: %d / 30 cycles \n",__func__, count_cycles);
+		pr_debug("fpf %s counting in cycle before KEY_HOME 1 synced: %d / %d cycles \n",__func__, count_cycles, DT_WAIT_PERIOD_BASE_VALUE+doubletap_wait_period);
 	}
 	time_count_done_in_home_button_func_work = 1;
 	if (break_home_button_func_work == 0) {
@@ -319,6 +326,54 @@ static struct input_handler fpf_input_handler = {
 	.name		= "fpf_inputreq",
 	.id_table	= fpf_ids,
 };
+
+static ssize_t fpf_dt_wait_period_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%d\n", doubletap_wait_period);
+}
+
+static ssize_t fpf_dt_wait_period_dump(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count)
+{
+	int ret;
+	unsigned long input;
+
+	ret = kstrtoul(buf, 0, &input);
+	if (ret < 0)
+		return ret;
+
+	if (input < 0 || input > DT_WAIT_PERIOD_MAX)
+		input = DT_WAIT_PERIOD_DEFAULT;
+
+	doubletap_wait_period = input;
+	return count;
+}
+
+static DEVICE_ATTR(fpf_dt_wait_period, (S_IWUSR|S_IRUGO),
+	fpf_dt_wait_period_show, fpf_dt_wait_period_dump);
+
+
+static ssize_t fpf_dt_wait_period_max_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%d\n", DT_WAIT_PERIOD_MAX);
+}
+
+static ssize_t fpf_dt_wait_period_max_dump(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count)
+{
+	int ret;
+	unsigned long input;
+	ret = kstrtoul(buf, 0, &input);
+	if (ret < 0)
+		return ret;
+	return count;
+}
+
+static DEVICE_ATTR(fpf_dt_wait_period_max, (S_IWUSR|S_IRUGO),
+	fpf_dt_wait_period_max_show, fpf_dt_wait_period_max_dump);
+
 
 static ssize_t fpf_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
@@ -479,6 +534,14 @@ static int __init fpf_init(void)
 	rc = sysfs_create_file(fpf_kobj, &dev_attr_fpf.attr);
 	if (rc)
 		pr_err("%s: sysfs_create_file failed for fpf\n", __func__);
+
+	rc = sysfs_create_file(fpf_kobj, &dev_attr_fpf_dt_wait_period.attr);
+	if (rc)
+		pr_err("%s: sysfs_create_file failed for fpf_dt_wait_period\n", __func__);
+
+	rc = sysfs_create_file(fpf_kobj, &dev_attr_fpf_dt_wait_period_max.attr);
+	if (rc)
+		pr_err("%s: sysfs_create_file failed for fpf_dt_wait_period_max\n", __func__);
 
 	rc = sysfs_create_file(fpf_kobj, &dev_attr_vib_strength.attr);
 	if (rc)
