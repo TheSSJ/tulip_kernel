@@ -242,7 +242,7 @@
 			< 1094400000 4>,
 			< 1344000000 5>,
 			< 1440000000 6>,
-			< 1516800000 7>;
+			< 1516800000 7>,
 			< 1651200000 8>;
 
 		qcom,speed0-bin-v0-cci =
@@ -268,7 +268,7 @@
 			< 1094400000 4>,
 			< 1344000000 5>,
 			< 1440000000 6>,
-			< 1516800000 7>;
+			< 1516800000 7>,
 			< 1651200000 8>;
 
 		qcom,speed1-bin-v0-cci =
@@ -449,7 +449,7 @@
 			 < 1651200 >;
 		qcom,cpufreq-table-4 =
 			 <  403200 >,
-			 <  533330 >
+			 <  533330 >,
 			 <  806400 >,
 			 <  998400 >,
 			 < 1094400 >,
@@ -778,9 +778,9 @@
 		qcom,msm-bus,num-cases = <3>;
 		qcom,msm-bus,num-paths = <1>;
 		qcom,msm-bus,vectors-KBps =
-		<90 512 0 0>,              /* No vote (ab=0 Mbps, ib=0 Mbps /96 NO BIMC vote) */
-		<90 512 100000 800000>,    /* SVS  - (ab=100Mbps, ib=800Mbps /96 50MHz BIMC freq) */
-		<90 512 100000 1200000>;   /* PERF - (ab=100Mbps, ib=1200Mbps /96 75MHz BIMC freq) */
+		<90 512 0 0>,              /* No vote (ab=0 Mbps, ib=0 Mbps \96 NO BIMC vote) */
+		<90 512 100000 800000>,    /* SVS  - (ab=100Mbps, ib=800Mbps \96 50MHz BIMC freq) */
+		<90 512 100000 1200000>;   /* PERF - (ab=100Mbps, ib=1200Mbps \96 75MHz BIMC freq) */
 		qcom,bus-vector-names = "MIN", "SVS", "PERF";
 		qcom,tethered-flow-control;
 	};

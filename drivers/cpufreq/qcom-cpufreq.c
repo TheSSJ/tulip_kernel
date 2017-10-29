@@ -385,7 +385,7 @@ static struct cpufreq_frequency_table *cpufreq_parse_dt(struct device *dev,
 		}
 		ftbl[i].driver_data = i;
 		ftbl[i].frequency = f;
-		pr_info("Frequency CPU: %d, %f", cpu,f);
+		pr_info("Frequency CPU: %d, %lu", cpu,f);
 	}
 
 	ftbl[i].driver_data = i;
