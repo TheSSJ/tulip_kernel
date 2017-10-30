@@ -21,6 +21,7 @@ MODULE_LICENSE("GPL");
 #define SWEEP_RIGHT		0x01
 #define SWEEP_LEFT		0x02
 #define VIB_STRENGTH		20
+#define TS_NAME	"synaptics_dsx"
 
 extern void set_vibrate(int value);
 
@@ -152,7 +153,6 @@ static void s2s_input_callback(struct work_struct *unused) {
 
 static void s2s_input_event(struct input_handle *handle, unsigned int type,
 				unsigned int code, int value) {
-
 	if (code == ABS_MT_SLOT) {
 		sweep2sleep_reset();
 		return;
@@ -181,7 +181,8 @@ static void s2s_input_event(struct input_handle *handle, unsigned int type,
 }
 
 static int input_dev_filter(struct input_dev *dev) {
-	if (strstr(dev->name, "synaptics_dsx_i2c")) {
+	if (strstr(dev->name, TS_NAME)) {
+		pr_info("Hooked to touchscreen");
 		return 0;
 	} else {
 		return 1;
@@ -195,7 +196,7 @@ static int s2s_input_connect(struct input_handler *handler,
 
 	if (input_dev_filter(dev))
 		return -ENODEV;
-
+	pr_info("Hooked to touchscreen");
 	handle = kzalloc(sizeof(struct input_handle), GFP_KERNEL);
 	if (!handle)
 		return -ENOMEM;
@@ -354,5 +355,5 @@ static void __exit sweep2sleep_exit(void)
 	return;
 }
 
-module_init(sweep2sleep_init);
+late_initcall(sweep2sleep_init);
 module_exit(sweep2sleep_exit);
