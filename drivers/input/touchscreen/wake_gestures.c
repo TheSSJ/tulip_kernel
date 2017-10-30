@@ -221,6 +221,7 @@ static void detect_doubletap2wake(int x, int y, bool st)
 				report_gesture(5);
 			} else {
 #endif
+				set_vibrate(vib_strength);
 				wake_pwrtrigger();
 #if (WAKE_GESTURES_ENABLED)
 			}
