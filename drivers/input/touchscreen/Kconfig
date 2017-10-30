@@ -1021,6 +1021,10 @@ config TOUCHSCREEN_SYNAPTICS_DSX_FW_UPDATE
 	  To compile this driver as a module, choose M here: the
 	  module will be called synaptics_dsx_fw_update.
 
+config WAKE_GESTURES
+	bool "wake gestures"
+	default y
+
 config SECURE_TOUCH
 	bool "Secure Touch"
 	depends on (TOUCHSCREEN_ATMEL_MXT || TOUCHSCREEN_SYNAPTICS_I2C_RMI4 || \

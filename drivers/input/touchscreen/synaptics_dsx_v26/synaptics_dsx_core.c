@@ -121,6 +121,15 @@
 bool g_enable = false;
 static int suspend_flag = 0;
 
+#ifdef CONFIG_WAKE_GESTURES
+#include <linux/wake_gestures.h>
+static bool suspended = false;
+bool scr_suspended(void)
+{
+	return suspended;
+}
+#endif
+
 static DECLARE_WAIT_QUEUE_HEAD(suspend_waitq);
 
 extern struct i2c_client *global_client;
@@ -1063,6 +1072,10 @@ static int synaptics_rmi4_f11_abs_report(struct synaptics_rmi4_data *rmi4_data,
 					 BTN_TOUCH, 1);
 			input_report_key(rmi4_data->input_dev,
 					 BTN_TOOL_FINGER, 1);
+#ifdef CONFIG_WAKE_GESTURES
+			if (suspended)
+				x += 5000;
+#endif
 			input_report_abs(rmi4_data->input_dev,
 					 ABS_MT_POSITION_X, x);
 			input_report_abs(rmi4_data->input_dev,
@@ -5403,6 +5416,7 @@ static void synaptics_rmi4_late_resume(struct early_suspend *h)
 	if (rmi4_data->enable_wakeup_gesture) {
 		synaptics_rmi4_wakeup_gesture(rmi4_data, false);
 		disable_irq_wake(rmi4_data->irq);
+		suspended = false;
 		goto exit;
 	}
 
@@ -5446,7 +5460,9 @@ static int synaptics_rmi4_suspend(struct device *dev)
 
 	pr_info("***%s.\n", __func__);
 
-
+	#ifdef CONFIG_WAKE_GESTURES
+	suspended = true;
+	#endif
 
 
 	queue_delayed_work(rmi4_data->rb_workqueue,
@@ -5566,6 +5582,9 @@ static void synaptics_rmi4_resume_work(struct work_struct *work)
 	int retval;
 
 	pr_info("%s into\n", __func__);
+#ifdef CONFIG_WAKE_GESTURES
+	suspended = false;
+#endif
 
 #ifdef CONFIG_USE_NDT_FORCE_TOUCH
 	ndt_stress_resume();
