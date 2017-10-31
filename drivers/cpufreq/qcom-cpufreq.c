@@ -29,21 +29,11 @@
 #include <linux/of.h>
 #include <trace/events/power.h>
 
-static unsigned long arg_cpu_max_c1 = 1516800;
-static int __init cpufreq_read_cpu_max_c1(char *cpu_max_c1)
-{
-	unsigned long ui_khz;
-	int ret;
-
-	ret = kstrtoul(cpu_max_c1, 0, &ui_khz);
-	if (ret)
-		return -EINVAL;
-
-	arg_cpu_max_c1 = ui_khz;
-	printk("cpu_max_c1=%lu\n", arg_cpu_max_c1);
-	return ret;
-}
-__setup("cpu_max_c1=", cpufreq_read_cpu_max_c1);
+//Default startup frequencies
+//#define CONFIG_CPU_FREQ_MIN_CLUSTER1	403200
+//#define CONFIG_CPU_FREQ_MAX_CLUSTER1	1209600
+//#define CONFIG_CPU_FREQ_MIN_CLUSTER2	499200
+//#define CONFIG_CPU_FREQ_MAX_CLUSTER2	1651200
 
 static DEFINE_MUTEX(l2bw_lock);
 
@@ -379,10 +369,7 @@ static struct cpufreq_frequency_table *cpufreq_parse_dt(struct device *dev,
 		 */
 		if (i > 0 && f <= ftbl[i-1].frequency)
 			break;
-		if (cpu < 4 && f > arg_cpu_max_c1) {
-			nf = i;
-			break;
-		}
+
 		ftbl[i].driver_data = i;
 		ftbl[i].frequency = f;
 		pr_info("Frequency CPU: %d, %lu", cpu,f);

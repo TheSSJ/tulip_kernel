@@ -192,6 +192,15 @@ config CPU_FREQ_GOV_INTERACTIVE
 
 	  If in doubt, say N.
 
+config CPU_FREQ_GOV_BLUACTIVE
+	tristate "'blu-active' cpufreq policy governor"
+
+config CPU_FREQ_GOV_IMPULSE
+	tristate "'impulse' cpufreq policy governor"
+
+config CPU_FREQ_GOV_YANKACTIVE
+	tristate "'yankactive' cpufreq policy governor"
+
 config CPU_FREQ_GOV_CONSERVATIVE
 	tristate "'conservative' cpufreq governor"
 	depends on CPU_FREQ

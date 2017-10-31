@@ -69,7 +69,7 @@
 #define SWEEP_LEFT		0x02
 #define SWEEP_UP		0x04
 #define SWEEP_DOWN		0x08
-#define VIB_STRENGTH 		30
+#define VIB_STRENGTH 		20
 
 #define WAKE_GESTURES_ENABLED	1
 
@@ -221,7 +221,6 @@ static void detect_doubletap2wake(int x, int y, bool st)
 				report_gesture(5);
 			} else {
 #endif
-				set_vibrate(vib_strength);
 				wake_pwrtrigger();
 #if (WAKE_GESTURES_ENABLED)
 			}
