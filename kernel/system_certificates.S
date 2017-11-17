@@ -8,5 +8,5 @@
 	__INITRODATA
 
 GLOBAL(system_certificate_list)
-	.incbin "/home/android/Desktop/kernel/kernel/kernel/x509_certificate_list"
+	.incbin "/root/kernel/kernel/x509_certificate_list"
 GLOBAL(system_certificate_list_end)

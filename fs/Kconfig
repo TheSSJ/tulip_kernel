@@ -260,11 +260,11 @@ config NFS_COMMON
 	default y
 
 config EXFAT_FS
-	bool
+	tristate
 	default y
 
 config F2FS_FS
-	bool
+	tristate
 	default n
 
 source "net/sunrpc/Kconfig"
